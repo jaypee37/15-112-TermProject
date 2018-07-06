@@ -1,0 +1,38 @@
+PROJECT DESCRIPTION
+	-"The 9 Gates of 112 "
+	- A 2d mega man type game with a dope character selection UI and boss fights. 
+COMPETITIVE ANALYSIS
+	- some similar projects steven and connie vs the robot have the same main character vs enemy structure, I want 
+	to have more attack and movement capabilities. I will have the same background picture idea. 15112 DarkKnight has similar player features
+	When i turn direction the character profile will change, However my game will be from aside view not atop view. Street Fighter is similar in that 
+	i am using a famous game iconn as the character. Also, i will have a character selection. I intend on having more characters to choose from.
+ 
+
+STRUCTURAL PLAN
+	- everything will be kept track of in a trello
+	- base character will be an object file
+	- each major scene will be a file
+	- specific characters will be in diffent object files
+	- charcter selction functions will be it own file
+	- game file handles events and scene change
+	
+	
+ALGORITHMIC PLAN 
+	TOUGHEST PART _ Character Selection _ 
+	- each character class will have a profile pic for selection
+	- character class will have highlight method
+	- pedestal object have  display character method that takes in current character
+	- buttons to control movement and selection
+	- buttons only select character spots, aka have the chars in a list and draw em
+	
+TIMELINE PLAN
+	- week 1 - finish start screen, charcater movement with joystick,and basic scene layout
+	- week 2 - character selection, enemey spawning, story plot
+	- week 3 - finishing touches, debugging, making it look dope, adding extra features
+VERSION CONTROL PLAN
+	- github
+	- flash drive
+MODULE LIST
+	- pygame
+	- joystick
+

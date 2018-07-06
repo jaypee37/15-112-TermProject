@@ -1,0 +1,26 @@
+hello my name is jp an dthis is my term project
+its called the 112 gates of hell and 
+it is a 2d side scrolling game made with pygame
+
+its played with a ps4 controller 
+and here is the button layout
+
+u start as megman in  the 
+dungeons of hell
+
+you have to kill a certian number 
+of demons determined in the beginning of each round
+
+each enemy takes 5 bullets to kill 
+and randomly drops a missile or a medkit
+
+u can collect missisles and then use 
+thm when you please with the homing missiles feature
+
+u can lock on to an enemy and and 
+the missile will follow it
+
+when you lose the scren flashed 
+red aand you can restart from level 1
+
+when you win this happens
