@@ -1,37 +1,45 @@
-def nthNearestPalinDrome(n,start):
-    found = 0
-    guess = start
-    lo = start
-    hi = start
-    lst  = []
-    if n == 0:
-        return start
+def mostFrequentLetters(s):
+	s = s.lower()
+	s = s.replace(" ","")
+	r = ""
+	for i in s:
+		if not i.isalpha():
+			continue
+		else:
+			r+= i
+	
+	s = r
+	
+	s = sorted(s)
+	print(s)
 
-    while found < n:
+	result = "" + s[0]
+	#teanioscdhpruglw
 
-        lo -= 1
-        hi += 1
-        if isPalin(lo) and isPalin(hi):
-            found += 1
-            lst.append(max(lo,hi))
+	for i in range(1,len(s)):
+		cur = s.count(s[i])
 
-        elif isPalin(lo):
-            found += 1
-            lst.append(lo)
-        elif isPalin(hi):
+		if s[i] not in result:
+			for j in range(len(result)):
+				if j == len(result) -1:
+					result += s[i]
+					continue
+				if cur <= s.count(result[j]) and cur > s.count(result[j+1]):
+					
+					result = result[:j] + s[i] + result[j:]
+					break
+				print(result)
+	print(result)
+	return result
+def testMostFrequentLetters():
+    print("Testing mostFrequentLetters()...", end="")
+    assert(mostFrequentLetters("We attack at Dawn") == "atwcdekn")
+    s = "Note that digits, punctuation, and whitespace are not letters!"
+    assert(mostFrequentLetters(s) == "teanioscdhpruglw")
+    assert(mostFrequentLetters("") == "")
+    print("Passed.")
 
-            found += 1
-            lst.append(hi)
-        
-
-    return lst[-1]
-
-def isPalin(num):
-
-    s = str(num)
-    if s[0] == s[2]:
-        return True
-
-    return False
-
-print(nthNearestPalinDrome(1,126))
+#print(mostFrequentLetters("We Attack at Dawn"))
+#atwcdekn
+#w
+testMostFrequentLetters()

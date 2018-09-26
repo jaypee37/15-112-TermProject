@@ -17,9 +17,7 @@ from letter import Letter
 import math
 import os
 import random
-'''
-This code was inspired by Lukas Peraza's Game.py
-'''
+
 class Background(pygame.sprite.Sprite):
     
 
@@ -89,9 +87,7 @@ class Game(PygameGame):
         self.letterX = 0
         self.lvl = 1
         self.letterLst = ["%s" %self.lvl,":","l","e","v","e","L"]
-        self.letterIndex = -1
-
-        
+        self.letterIndex = -1   
         self.letters = []
         self.letterCounter = 0
         self.letterNum = 0
@@ -104,8 +100,6 @@ class Game(PygameGame):
         self.s = StartScreen()
         self.bgColor = (0, 0, 0)
         Enemy.poses()
-        #HomingMissle.createCurve([[300,300],[400,200],[500,250]])
-        #Background.setBackground("background")
         self.startWall = Wall(0,360,400,360)
         self.endWall = Wall(1600,360,400,360)
         self.bulletGroup = pygame.sprite.Group()       
@@ -127,17 +121,16 @@ class Game(PygameGame):
         self.jumpingLeft = False
         
         self.enemyRunCounter = 0
-        self.H = pygame.sprite.GroupSingle()
-        self.num = 1
+        self.homingMissles = pygame.sprite.GroupSingle()
+        self.rotateCount = 1
         self.aimMode = False
         self.target = Target()
-        self.rotatedTarget = self.target.rotate(self.num)
+        self.rotatedTarget = self.target.rotate(self.rotateCount)
         self.targetX,self.targetY = 100,100
         self.healthBar = HealthBar(0,0,self.width,self.height)
         self.homing = False
         self.isKilled = False
         self.enemyBulletGroup = pygame.sprite.Group()
-        self.i = 1
         self.bloodGroup = pygame.sprite.Group()
         self.scrollX = 0
         self.lockedOn = False
@@ -167,24 +160,15 @@ class Game(PygameGame):
         self.endMusic = False
         self.pause = False
         self.pauseImage = pygame.transform.scale(pygame.image.load('images/pause.png'),(200,200))
-        #print(self.letterIndex)        #screen.blit((text),(self.width//2 -w//2,470-h//2))
 
-        
-        
-
-
-
-    def findY(self,x):
+    def findY(self,x): #enable running over slopes and hills
         for wall in self.walls:
-            #print(type(wall).__name__)
-      
             if type(wall).__name__ == "Wall":
                 if wall.x1 <= x < wall.x1 + wall.x2:
                     slope = 0
                     
                     return wall.y1
-
-                    
+           
             else:
                 if wall.x1 <= x < wall.x2:
 
@@ -194,34 +178,6 @@ class Game(PygameGame):
                     if slope<0:
                         y = 500 - ((slope * (x-wall.x1)) + (500 - wall.y1))
                     return y
-
-
-    def recurse(self,lst):
-
-        if len(lst) == 0:
-
-            return []
-
-        elif lst[0][1] != self.findY(lst[0][0])- 10:
-            lst[0][1] = self.findY(lst[0][0])- 10
-
-            return  [[lst[0][0],lst[0][1]] ]+ self.recurse(lst[1:])
-
-        else:
-
-
-            return [[lst[0][0],lst[0][1]] ]+ self.recurse(lst[1:])
-
-
-
-
-
-
-
-
-
-
-
 
     def checkBounds(self):
         x = random.randrange(0,self.width)
@@ -245,10 +201,10 @@ class Game(PygameGame):
                         if x   > self.player.x + self.scrollX:
                         
                             self.enemies.add(Enemy(x,y-20,False,"Right"))
-                            #print("right",x ,"wall",self.player.x + self.scrollX)
+
                         else:
                             self.enemies.add(Enemy(x,y-20,True,"Left"))
-                            #print("left",x ,"wall",self.player.x + self.scrollX)
+     
 
 
                         
@@ -264,11 +220,11 @@ class Game(PygameGame):
                         if x > self.player.x+self.scrollX:
                         
                             self.enemies.add(Enemy(x,y-20,False,"Right"))
-                            #print("right",x ,'slant',self.player.x + self.scrollX)
+                           
                         else:
                             self.enemies.add(Enemy(x,y-20,True,"Left"))
                         
-                            #print("left",x,"slant",self.player.x + self.scrollX)
+                     
                  
             self.spawnCounter = 0
             self.spawnTrigger = random.randint(35,55)
@@ -330,17 +286,13 @@ class Game(PygameGame):
                     else:
                         self.bulletGroup.add(Bullet(self.player.x- self.player.width//2 ,\
                             self.player.y-self.player.height//6-4, self.dir))
-                        #print(self.player.x- self.scrollX)
-
-                
-
-                # shoots bullet
+         
                 
                 elif keyCode == pygame.K_1 or keyCode == "R1" and self.missiles > 0:
                     #self.coor = self.player.missile()
                     if self.lockedOn:
                         
-                        self.H.add(HomingMissle(self.player.x+self.scrollX,self.player.y))
+                        self.homingMissles.add(HomingMissle(self.player.x+self.scrollX,self.player.y))
                         
                         self.lockedOn = False
                         if self.missiles > 0:
@@ -355,7 +307,6 @@ class Game(PygameGame):
 
 
     def isKeyPressed(self, key):
-        ''' return whether a specific key is being held '''
         return self._keys.get(key, False)
 
 
@@ -391,16 +342,8 @@ class Game(PygameGame):
 
     def followPlayer(self):
 
-        '''for e in self.enemies:
-            if e.x > self.player.x:
-                e.flip = False
-            else:
-                e.flip = True'''
         for e in self.enemies:
             x = e.x
-
-            
-                #print(e.rect)
             if e.x > self.player.x + self.scrollX:
                 x = x-5
             else:
@@ -415,8 +358,8 @@ class Game(PygameGame):
            
             if enemy.health <= 0:
                 if enemy.lockedOn:
-                    self.H.empty()
-             #   enemy.isDead = True
+                    self.homingMissles.empty()
+          
                 drop = enemy.drop()
                 if drop != None:
                     Game.GameDrops.add(drop)
@@ -430,14 +373,9 @@ class Game(PygameGame):
                 
 
               
-        #change image if dead
+        
       
         for enemy in self.enemies:
-            #self.followPlayer()
-            '''if enemy.isDead :
-                            #enemy.deathCounter +=1 
-                            #f enemy.deathCounter == 15:
-                enemy.kill()  '''
 
             
             if self.player.zoneRect.colliderect(enemy.rect):
@@ -450,7 +388,7 @@ class Game(PygameGame):
                     elif enemy.x > self.player.x + self.scrollX:
                         self.enemyBulletGroup.add(Fireball(enemy.x ,enemy.y-12,"Left"))
                 
-                    #print(enemy.x-self.scrollX)
+        
             
             else:   
                 enemy.move(self.scrollX,self.player.x + self.scrollX,self.walls)
@@ -466,7 +404,7 @@ class Game(PygameGame):
 
                 self.letterCounter += 1
                 if self.letterCounter == 5:
-                    #print(self.i)
+                    
                     self.letterIndex += 1
                     self.letterX -= 40
                     
@@ -479,7 +417,7 @@ class Game(PygameGame):
 
                 self.letterTimer+= 1
                 if self.letterTimer == 40:
-                    #print("stop")
+                  
                     self.lvlUp = False
                     self.letters = []
                     self.letterNum = 0
@@ -490,20 +428,17 @@ class Game(PygameGame):
             for l in self.letters:
                 l.move()
 
-    def timerFired(self, dt):
+    def timerFired(self, dt): 
         if self.health <= 0:
             self.gameOver = True
             pygame.mixer.music.stop()
 
-        if self.lvl == 2:
+        if self.lvl == 3:
             self.gameWon = True
-            
-
-                #screen.fill((0,0,0))
 
         if not self.gameOver and not self.gameWon and not self.pause:
 
-            #print(self.isKilled)
+   
             self.text = self.myfont.render('Enemies:  %s' %self.enemyNum, False, (0,0,0))
             self.BackGround.image = self.BackGround.backs[self.BackGround.change()]
             
@@ -521,11 +456,6 @@ class Game(PygameGame):
                
                 self.letterLst = ["%s" %self.lvl,":","l","e","v","e","L"]
             self.levelUp()
-            '''if self.isKeyPressed(pygame.K_RIGHT) :
-                self.scrollX += 10
-
-            elif self.isKeyPressed(pygame.K_LEFT) and (self.startWall.x1-self.scrollX) <0:
-                self.scrollX -=10'''
 
             for enemy in self.enemies:
                 enemy.updateImage(self.scrollX)
@@ -537,23 +467,16 @@ class Game(PygameGame):
 
                 Target.count += 1
                 if Target.count == 4:
-                    self.num += 1
+                    self.rotateCount += 1
                     Target.count = 0
-                    if self.num == 5:
-                        self.num = 1
+                    if self.rotateCount == 5:
+                        self.rotateCount = 1
                 
-                self.rotatedTarget = self.target.rotate(self.num)
-                
-
-
-
-                
+                self.rotatedTarget = self.target.rotate(self.rotateCount)
+      
             else:
                 self.spawn()
 
-                
-                #pygame.sprite.groupcollide(self.H,self.enemies,True,True)
-                
                    
                 for bullet in self.enemyBulletGroup:
 
@@ -563,11 +486,8 @@ class Game(PygameGame):
                         self.healthBar.hit()
                         self.health -= 10
 
-
-
-
                 
-                for p in self.H:
+                for p in self.homingMissles:
                     for e in self.enemies:
                         if e.lockedOn :
                             
@@ -576,7 +496,7 @@ class Game(PygameGame):
                             if e.missileRect.colliderect(p.missileRect):
                                 
                                 self.homing = False
-                                self.H.empty()
+                                self.homingMissles.empty()
                                 e.kill()
                                 self.enemyNum -= 1
 
@@ -593,7 +513,7 @@ class Game(PygameGame):
 
                 if not self.jumping:
                     y = self.findY(self.player.x+ self.scrollX)
-                    #print(y,self.player.x)
+
                     if self.player.y != y:
                         self.player.y = y -15
                 else:
@@ -604,7 +524,6 @@ class Game(PygameGame):
                         self.v -=1
 
                     y = self.findY(self.player.x+ self.scrollX)
-                    #print(y,self.player.x)
                     if self.player.y >= y:
                         self.player.y = y -15
                         self.jumping = False
@@ -705,7 +624,7 @@ class Game(PygameGame):
         
             for drop in Game.GameDrops:
                 screen.blit(drop.image,(drop.x-self.scrollX,drop.y))
-            #screen.blit(self.player.image,(self.player.x-self.scrollX,self.player.y))
+           
             self.player.draw(screen,self.scrollX)
 
             for bullet in self.bulletGroup:
@@ -723,7 +642,7 @@ class Game(PygameGame):
                 
             if self.homing:
                 #print("HOMINGGGGGG")
-                for h in self.H:
+                for h in self.homingMissles:
                     h.draw(screen,self.scrollX)
        
             self.healthBar.draw(screen,self.missiles)
